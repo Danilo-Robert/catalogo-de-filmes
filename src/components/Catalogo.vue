@@ -4,6 +4,12 @@
       <v-col v-for="filme in filmes" :key="filme.id" cols="12" sm="6" md="4">
         <v-card class="mx-auto" max-width="344">
           <v-img height="285px" :src="filme.imagem" cover />
+          <v-icon
+            :color="filme.favorito ? 'red-darken-1' : 'red-darken-1'"
+            class="position-absolute top-0 right-0 ma-2"
+            @click="filme.favorito = !filme.favorito"
+            >{{ filme.favorito ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon
+          >
           <v-card-title>
             {{ filme.titulo }}
           </v-card-title>
@@ -13,16 +19,13 @@
           </v-card-subtitle>
 
           <v-card-actions>
-            <v-btn color="orange-lighten-2" text="Descrição"></v-btn>
+            <v-btn
+              color="orange-lighten-2"
+              @click="filme.sinopseAberta = !filme.sinopseAberta"
+              >Descrição</v-btn
+            >
 
             <v-spacer></v-spacer>
-
-            <v-btn
-              :icon="
-                filme.sinopseAberta ? 'mdi-chevron-up' : 'mdi-chevron-down'
-              "
-              @click="filme.sinopseAberta = !filme.sinopseAberta"
-            ></v-btn>
           </v-card-actions>
           <v-expand-transition>
             <div v-show="filme.sinopseAberta">
@@ -47,6 +50,7 @@ const filmes = ref([
     id: 1,
     titulo: "Velozes e Furiosos",
     generos: "Ação, Aventura, Corrida",
+    favorito: false,
     imagem:
       "https://img.elo7.com.br/product/zoom/268DCC4/big-poster-velozes-e-furiosos-lo06-tamanho-90x60-cm-velozes-e-furiosos.jpg",
     sinopse:
@@ -57,6 +61,7 @@ const filmes = ref([
     id: 2,
     titulo: "+ Velozes + Furiosos",
     generos: "Ação, Aventura, Crime",
+    favorito: false,
     imagem:
       "https://br.web.img3.acsta.net/c_310_420/medias/nmedia/18/90/03/20/20077808.jpg",
     sinopse:
@@ -67,6 +72,7 @@ const filmes = ref([
     id: 3,
     titulo: "Velozes & Furiosos 4",
     generos: "Ação, Corrida, Crime",
+    favorito: false,
     imagem:
       "https://br.web.img3.acsta.net/c_310_420/pictures/210/445/21044501_2013092621313492.jpg",
     sinopse:
@@ -77,6 +83,7 @@ const filmes = ref([
     id: 4,
     titulo: "Velozes & Furiosos 5: Operação Rio",
     generos: "Ação, Aventura, Crime",
+    favorito: false,
     imagem:
       "https://br.web.img3.acsta.net/c_310_420/medias/nmedia/18/87/34/17/20028727.jpg",
     sinopse:
@@ -87,6 +94,7 @@ const filmes = ref([
     id: 5,
     titulo: "Velozes & Furiosos 6",
     generos: "Ação, Aventura, Loucura",
+    favorito: false,
     imagem:
       "https://br.web.img2.acsta.net/c_310_420/medias/nmedia/18/92/81/46/20528636.jpg",
     sinopse:
@@ -97,6 +105,7 @@ const filmes = ref([
     id: 6,
     titulo: "Velozes & Furiosos 7",
     generos: "Ação, Aventura, Tristeza",
+    favorito: false,
     imagem:
       "https://br.web.img3.acsta.net/c_310_420/pictures/15/03/30/21/19/054397.jpg",
     sinopse:
