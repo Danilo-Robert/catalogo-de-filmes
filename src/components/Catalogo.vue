@@ -77,8 +77,12 @@
     </v-row>
 
     <v-dialog v-model="dialog" max-width="800">
-      <v-card v-if="filmeSelecionado">
-        <v-img :src="filmeSelecionado.imagem" max-height="350" contain> </v-img>
+      <v-card 
+      v-if="filmeSelecionado"
+      style="max-height: 90vh; overflow-y: auto;">
+        <v-card-text class="d-flex justify-center">
+          <v-img :src="filmeSelecionado.imagem" max-height="350" contain> </v-img>
+        </v-card-text>
         <v-card-title>
           {{ filmeSelecionado.titulo }}
         </v-card-title>
@@ -102,7 +106,8 @@
           <v-spacer></v-spacer>
 
           <v-btn 
-          color="primary"
+          color="amber-darken-2"
+          variant="outlined"
           @click="dialog = false">Fechar</v-btn>
         </v-card-actions>
       </v-card>
