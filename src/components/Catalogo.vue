@@ -1,17 +1,23 @@
 <template>
   <v-container>
-    <v-row>
-      <v-col v-for="filme in filmes" :key="filme.id" cols="12" sm="6" md="4">
-        <v-card class="mx-auto" max-width="344">
+    <v-row align="stretch">
+      <v-col v-for="filme in filmes" :key="filme.id" cols="12" sm="6" md="4" class="d-flex">
+        <v-card class="d-flex flex-column" style="width: 100%" >
           <v-img height="285px" :src="filme.imagem" cover />
           <v-icon
-            :color="filme.favorito ? 'red-darken-1' : 'red-darken-1'"
+            :color="filme.favorito ? 'red-darken-1' : 'grey-lighten-1'"
             class="position-absolute top-0 right-0 ma-2"
             @click="filme.favorito = !filme.favorito"
-            >{{ filme.favorito ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon
+            >{{ filme.favorito ? "mdi-heart" : "mdi-heart-outline" }}</v-icon
           >
-          <v-card-title>
-            {{ filme.titulo }}
+          <v-card-title class="d-flex align-center justify-space-between">
+            <span class="text-wrap">{{ filme.titulo }}</span>
+            <v-icon
+              :color="filme.status ? 'amber-darken-2' : 'grey-lighten-1'"
+              @click="filme.status = !filme.status"
+            >
+              {{ filme.status ? 'mdi-star-box-multiple' : 'mdi-star-box-multiple-outline' }}
+            </v-icon>
           </v-card-title>
 
           <v-card-subtitle>
@@ -20,12 +26,17 @@
 
           <v-card-actions>
             <v-btn
-              color="orange-lighten-2"
+              color="amber-darken-2"
               @click="filme.sinopseAberta = !filme.sinopseAberta"
               >Descrição</v-btn
             >
 
             <v-spacer></v-spacer>
+
+            <div class="d-flex align-center">
+              <v-icon color="amber-darken-2" class="mr-1"> mdi-star </v-icon>
+              <span>{{ filme.nota?.toFixed(1) || "0.0" }}/5</span>
+            </div>
           </v-card-actions>
           <v-expand-transition>
             <div v-show="filme.sinopseAberta">
@@ -51,6 +62,8 @@ const filmes = ref([
     titulo: "Velozes e Furiosos",
     generos: "Ação, Aventura, Corrida",
     favorito: false,
+    nota: 4.8,
+    status: false,
     imagem:
       "https://img.elo7.com.br/product/zoom/268DCC4/big-poster-velozes-e-furiosos-lo06-tamanho-90x60-cm-velozes-e-furiosos.jpg",
     sinopse:
@@ -62,6 +75,8 @@ const filmes = ref([
     titulo: "+ Velozes + Furiosos",
     generos: "Ação, Aventura, Crime",
     favorito: false,
+    nota: 4.9,
+    status: false,
     imagem:
       "https://br.web.img3.acsta.net/c_310_420/medias/nmedia/18/90/03/20/20077808.jpg",
     sinopse:
@@ -73,6 +88,8 @@ const filmes = ref([
     titulo: "Velozes & Furiosos 4",
     generos: "Ação, Corrida, Crime",
     favorito: false,
+    nota: 4.0,
+    status: false,
     imagem:
       "https://br.web.img3.acsta.net/c_310_420/pictures/210/445/21044501_2013092621313492.jpg",
     sinopse:
@@ -84,6 +101,8 @@ const filmes = ref([
     titulo: "Velozes & Furiosos 5: Operação Rio",
     generos: "Ação, Aventura, Crime",
     favorito: false,
+    nota: 4.5,
+    status: false,
     imagem:
       "https://br.web.img3.acsta.net/c_310_420/medias/nmedia/18/87/34/17/20028727.jpg",
     sinopse:
@@ -95,6 +114,8 @@ const filmes = ref([
     titulo: "Velozes & Furiosos 6",
     generos: "Ação, Aventura, Loucura",
     favorito: false,
+    nota: 4.2,
+    status: false,
     imagem:
       "https://br.web.img2.acsta.net/c_310_420/medias/nmedia/18/92/81/46/20528636.jpg",
     sinopse:
@@ -106,6 +127,8 @@ const filmes = ref([
     titulo: "Velozes & Furiosos 7",
     generos: "Ação, Aventura, Tristeza",
     favorito: false,
+    nota: 4.6,
+    status: false,
     imagem:
       "https://br.web.img3.acsta.net/c_310_420/pictures/15/03/30/21/19/054397.jpg",
     sinopse:
