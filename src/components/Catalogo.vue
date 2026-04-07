@@ -1,5 +1,7 @@
 <template>
   <v-container>
+    <AdicionarFilme @adicionar-filme="adicionarFilme"/>
+    
     <v-row align="stretch">
       <v-col
         v-for="filme in filmesFiltrados"
@@ -117,6 +119,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
+import AdicionarFilme from "./AdicionarFilme.vue";
 
 const props = defineProps ({
   busca: String
@@ -218,4 +221,16 @@ const abrirDetalhes = (filme) => {
   filmeSelecionado.value = filme;
   dialog.value = true;
 };
+
+const adicionarFilme = (novoFilme) => {
+  const novoId =
+    filmes.value.length > 0
+    ? Math.max(...filmes.value.map((filme) => filme.id)) +1 : 1;
+
+    filmes.value.push({
+      id: novoId,
+      ...novoFilme,
+      imagem: novoFilme.imagem || "https://placehold.co/300x450",
+    });
+}
 </script>
