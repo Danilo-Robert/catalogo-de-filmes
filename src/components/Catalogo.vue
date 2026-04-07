@@ -2,7 +2,7 @@
   <v-container>
     <v-row align="stretch">
       <v-col
-        v-for="filme in filmes"
+        v-for="filme in filmesFiltrados"
         :key="filme.id"
         cols="12"
         sm="6"
@@ -116,10 +116,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
-const dialog = ref(false);
-const filmeSelecionado = ref(null);
+const props = defineProps ({
+  busca: String
+})
 
 const filmes = ref([
   {
@@ -201,6 +202,17 @@ const filmes = ref([
     sinopseAberta: false,
   },
 ]);
+
+const filmesFiltrados = computed (() => {
+  if (!props.busca){
+    return filmes.value
+  }
+  return filmes.value.filter((filme) =>
+    filme.titulo.toLowerCase().includes(props.busca.toLocaleLowerCase())
+  )
+})
+const dialog = ref(false);
+const filmeSelecionado = ref(null);
 
 const abrirDetalhes = (filme) => {
   filmeSelecionado.value = filme;
