@@ -1,9 +1,17 @@
 <template>
   <v-container>
     <v-row align="stretch">
-      <v-col v-for="filme in filmes" :key="filme.id" cols="12" sm="6" md="4" class="d-flex">
-        <v-card class="d-flex flex-column" style="width: 100%" >
-          <v-img height="285px" :src="filme.imagem" cover />
+      <v-col
+        v-for="filme in filmes"
+        :key="filme.id"
+        cols="12"
+        sm="6"
+        md="4"
+        class="d-flex"
+      >
+        <v-card class="d-flex flex-column" style="width: 100%">
+          <v-img height="285px" :src="filme.imagem" cover 
+          @click="abrirDetalhes(filme)"/>
           <v-icon
             :color="filme.favorito ? 'red-darken-1' : 'grey-lighten-1'"
             class="position-absolute top-0 right-0 ma-2"
@@ -11,12 +19,18 @@
             >{{ filme.favorito ? "mdi-heart" : "mdi-heart-outline" }}</v-icon
           >
           <v-card-title class="d-flex align-center justify-space-between">
-            <span class="text-wrap">{{ filme.titulo }}</span>
+            <span class="text-wrap" :title="filme.titulo">{{
+              filme.titulo
+            }}</span>
             <v-icon
               :color="filme.status ? 'amber-darken-2' : 'grey-lighten-1'"
               @click="filme.status = !filme.status"
             >
-              {{ filme.status ? 'mdi-star-box-multiple' : 'mdi-star-box-multiple-outline' }}
+              {{
+                filme.status
+                  ? "mdi-star-box-multiple"
+                  : "mdi-star-box-multiple-outline"
+              }}
             </v-icon>
           </v-card-title>
 
@@ -47,14 +61,60 @@
               </v-card-text>
             </div>
           </v-expand-transition>
+
+          <v-card-actions>
+            <v-btn
+              block
+              color="amber-darken-2"
+              variant="outlined"
+              @click="abrirDetalhes(filme)"
+            >
+              Detalhes</v-btn
+            >
+          </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
+
+    <v-dialog v-model="dialog" max-width="800">
+      <v-card v-if="filmeSelecionado">
+        <v-img :src="filmeSelecionado.imagem" max-height="350" contain> </v-img>
+        <v-card-title>
+          {{ filmeSelecionado.titulo }}
+        </v-card-title>
+
+        <v-card-subtitle>
+          {{ filmeSelecionado.generos }}
+        </v-card-subtitle>
+
+        <v-card-text>
+          <div class="d-flex align-center mb-4">
+            <v-icon icon="mdi-star" color="amber-darken-2" class="mr-1"></v-icon>
+            <span>{{ filmeSelecionado.nota.toFixed(1) }}/5</span>
+          </div>
+
+          <div>
+            {{ filmeSelecionado.sinopse }}
+          </div>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn 
+          color="primary"
+          @click="dialog = false">Fechar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
 <script setup lang="ts">
 import { ref } from "vue";
+
+const dialog = ref(false);
+const filmeSelecionado = ref(null);
 
 const filmes = ref([
   {
@@ -136,4 +196,9 @@ const filmes = ref([
     sinopseAberta: false,
   },
 ]);
+
+const abrirDetalhes = (filme) => {
+  filmeSelecionado.value = filme;
+  dialog.value = true;
+};
 </script>
