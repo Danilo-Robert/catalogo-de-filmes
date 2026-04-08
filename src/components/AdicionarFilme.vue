@@ -18,35 +18,35 @@
           v-model="novoFilme.titulo"
           label="Título"
           variant="outlined"
-          :rules="[regras.obrigatorio]"
+          :rules="[regras.tituloObrigatorio, regras.tituloMinimo]"
           class="mb-3"></v-text-field>
 
           <v-text-field
           v-model="novoFilme.generos"
           label="Gêneros"
           variant="outlined"
-          :rules="[regras.obrigatorio]"
+          :rules="[regras.generoObrigatorio]"
           class="mb-3"></v-text-field>
 
           <v-text-field
           v-model="novoFilme.nota"
           label="Nota"
           variant="outlined"
-          :rules="[regras.obrigatorio]"
+          :rules="[regras.notaObrigatoria, regras.notaValida]"
           class="mb-3"></v-text-field>
 
           <v-text-field
           v-model="novoFilme.imagem"
           label="URL da imagem"
           variant="outlined"
-          :rules="[regras.obrigatorio]"
+          :rules="[regras.imagemObrigatoria, regras.urlValida]"
           class="mb-3"></v-text-field>
 
           <v-textarea
             v-model="novoFilme.sinopse"
             label="Sinopse"
             variant="outlined"
-            :rules="[regras.obrigatorio]"
+            :rules="[regras.sinopseObrigatoria, regras.sinopseMinima]"
             rows="4"></v-textarea>
 
         </v-form>
@@ -85,13 +85,76 @@ const formRef = ref(null);
 const novoFilme = ref({
   titulo: "",
   generos: "",
-  nota: null,
+  nota: "",
   imagem: "",
   sinopse: "",
 });
 
+const formatarGeneros = (valor: string) => {
+  return valor
+    .replace(/[.,;|/\\-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(" ")
+    .filter(Boolean)
+    .map((genero) => genero.charAt(0).toUpperCase() + genero.slice(1).toLowerCase())
+    .join(", ");
+};
+
+const formataNota = (valor: string) => {
+  return valor.replace(",", ".").trim();
+};
+
 const regras = {
-  obrigatorio: (valor) => !!valor || "Este campo é obrigatório",
+  tituloObrigatorio: (valor: string) => !!valor?.trim() || "Este campo é obrigatório",
+
+  tituloMinimo: (valor: string) =>
+    valor?.trim().length >= 4 || "O título deve ter no mínimo 4 caracteres",
+
+  generoObrigatorio: (valor: string) =>
+    !!valor?.trim() || "O gênero é obrigatório",
+
+  notaObrigatoria: (valor: string) =>
+    !!valor?.trim() || "A nota é obrigatória",
+
+  notaValida: (valor: string) => {
+    const notaFormatada = formataNota(valor);
+
+    if (!notaFormatada) return "A nota é obrigatória";
+
+    const regex = /^(?:[0-4](?:\.\d)?|5(?:\.0)?)$/;
+
+    if (!regex.test(notaFormatada)) {
+      return 'A nota deve estar no formato "4.5" e no máximo 5.0';
+    }
+
+    const numero = Number(notaFormatada);
+
+    if (isNaN(numero)) return "Digite uma nota válida";
+    if (numero > 5) return "A nota não pode ser maior que 5.0";
+
+    return true;
+  },
+
+  imagemObrigatoria: (valor: string) =>
+    !!valor?.trim() || "A URL da imagem é obrigatória",
+
+  urlValida: (valor: string) => {
+    if (!valor?.trim()) return "A URL da imagem é obrigatória";
+
+    try {
+      new URL(valor);
+      return true;
+    } catch {
+      return "Digite uma URL válida";
+    }
+  },
+
+  sinopseObrigatoria: (valor: string) =>
+    !!valor?.trim() || "A sinopse é obrigatória",
+
+  sinopseMinima: (valor: string) =>
+    valor?.trim().length >= 15 || "A sinopse deve ter no mínimo 15 caracteres",
 };
 
 const abrirModal = () => {
@@ -104,7 +167,7 @@ const fecharModal = () => {
   novoFilme.value = {
     titulo: "",
     generos: "",
-    nota: null,
+    nota: "",
     imagem: "",
     sinopse: "",
   };
@@ -115,9 +178,16 @@ async function salvarFilme() {
 
   if(!valid) return;
 
+  const generosFormatados = formatarGeneros(novoFilme.value.generos);
+  const notaFormatada = formataNota(novoFilme.value.nota);
+
   emit("adicionar-filme", {
     ...novoFilme.value,
-    nota: Number(novoFilme.value.nota)
+    titulo: novoFilme.value.titulo.trim(),
+    generos: generosFormatados,
+    nota: Number(notaFormatada),
+    imagem: novoFilme.value.imagem.trim(),
+    sinopse: novoFilme.value.sinopse.trim(),
   });
 
   fecharModal();
