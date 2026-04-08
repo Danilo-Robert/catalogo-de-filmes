@@ -1,7 +1,8 @@
 <template>
   <v-container>
-    <AdicionarFilme @adicionar-filme="adicionarFilme"/>
-    
+    <AdicionarFilme @adicionar-filme="adicionarFilme" />
+    <EditaFilme @edita-filme="EditaFilme" />
+
     <v-row align="stretch">
       <v-col
         v-for="filme in filmesFiltrados"
@@ -12,8 +13,12 @@
         class="d-flex"
       >
         <v-card class="d-flex flex-column" style="width: 100%">
-          <v-img height="285px" :src="filme.imagem" cover 
-          @click="abrirDetalhes(filme)"/>
+          <v-img
+            height="285px"
+            :src="filme.imagem"
+            cover
+            @click="abrirDetalhes(filme)"
+          />
           <v-icon
             :color="filme.favorito ? 'red-darken-1' : 'grey-lighten-1'"
             class="position-absolute top-0 right-0 ma-2"
@@ -79,12 +84,37 @@
     </v-row>
 
     <v-dialog v-model="dialog" max-width="800">
-      <v-card 
-      v-if="filmeSelecionado"
-      style="max-height: 90vh; overflow-y: auto;">
+      <v-card
+        v-if="filmeSelecionado"
+        style="max-height: 90vh; overflow-y: auto"
+      >
         <v-card-text class="d-flex justify-center">
-          <v-img :src="filmeSelecionado.imagem" max-height="350" contain> </v-img>
+          <v-img :src="filmeSelecionado.imagem" max-height="350" contain>
+          </v-img>
         </v-card-text>
+
+        <template v-slot:append>
+          <v-menu>
+            <template v-slot:activator="{ props }">
+              <v-btn
+                color="grey-lighten"
+                icon="mdi-cog"
+                variant="text"
+                v-bind="props"
+              ></v-btn>
+            </template>
+            <v-list>
+              <v-list-item @click="abrirEdicao">
+                <v-list-item-title>Editar</v-list-item-title>
+              </v-list-item>
+
+              <v-list-item>
+                <v-list-item-title>Deletar</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </template>
+
         <v-card-title>
           {{ filmeSelecionado.titulo }}
         </v-card-title>
@@ -95,7 +125,11 @@
 
         <v-card-text>
           <div class="d-flex align-center mb-4">
-            <v-icon icon="mdi-star" color="amber-darken-2" class="mr-1"></v-icon>
+            <v-icon
+              icon="mdi-star"
+              color="amber-darken-2"
+              class="mr-1"
+            ></v-icon>
             <span>{{ filmeSelecionado.nota.toFixed(1) }}/5</span>
           </div>
 
@@ -107,23 +141,32 @@
         <v-card-actions>
           <v-spacer></v-spacer>
 
-          <v-btn 
-          color="amber-darken-2"
-          variant="outlined"
-          @click="dialog = false">Fechar</v-btn>
+          <v-btn
+            color="amber-darken-2"
+            variant="outlined"
+            @click="dialog = false"
+            >Fechar</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <EditaFilme
+      :dialog="dialogEditar"
+      :filme="filmeEditando"
+      @fechar="dialogEditar = false"
+      @salvar="salvarEdicao"
+    />
   </v-container>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import AdicionarFilme from "./AdicionarFilme.vue";
+import EditaFilme from "./EditaFilme.vue";
 
-const props = defineProps ({
-  busca: String
-})
+const props = defineProps({
+  busca: String,
+});
 
 const filmes = ref([
   {
@@ -206,14 +249,14 @@ const filmes = ref([
   },
 ]);
 
-const filmesFiltrados = computed (() => {
-  if (!props.busca){
-    return filmes.value
+const filmesFiltrados = computed(() => {
+  if (!props.busca) {
+    return filmes.value;
   }
   return filmes.value.filter((filme) =>
     filme.titulo.toLowerCase().includes(props.busca.toLocaleLowerCase())
-  )
-})
+  );
+});
 const dialog = ref(false);
 const filmeSelecionado = ref(null);
 
@@ -225,12 +268,37 @@ const abrirDetalhes = (filme) => {
 const adicionarFilme = (novoFilme) => {
   const novoId =
     filmes.value.length > 0
-    ? Math.max(...filmes.value.map((filme) => filme.id)) +1 : 1;
+      ? Math.max(...filmes.value.map((filme) => filme.id)) + 1
+      : 1;
 
-    filmes.value.push({
-      id: novoId,
-      ...novoFilme,
-      imagem: novoFilme.imagem || "https://placehold.co/300x450",
-    });
-}
+  filmes.value.push({
+    id: novoId,
+    ...novoFilme,
+    imagem: novoFilme.imagem || "https://placehold.co/300x450",
+  });
+};
+
+const dialogEditar = ref(false);
+const filmeEditando = ref(null);
+
+const abrirEdicao = () => {
+  filmeEditando.value = { ...filmeSelecionado.value };
+  dialogEditar.value = true;
+};
+
+const salvarEdicao = (filmeAtualizado) => {
+  const index = filmes.value.findIndex(
+    (filme) => filme.id === filmeAtualizado.id
+  );
+
+  if (index !== -1) {
+    filmes.value[index] = {
+      ...filmes.value[index],
+      ...filmeAtualizado,
+    };
+  }
+
+  filmeSelecionado.value = filmes.value[index];
+  dialogEditar.value = false;
+};
 </script>
