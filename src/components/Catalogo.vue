@@ -1,7 +1,6 @@
 <template>
   <v-container>
     <AdicionarFilme @adicionar-filme="adicionarFilme" />
-    <EditaFilme @edita-filme="EditaFilme" />
 
     <v-row align="stretch">
       <v-col
