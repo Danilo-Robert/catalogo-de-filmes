@@ -165,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import AdicionarFilme from "./AdicionarFilme.vue";
 import EditaFilme from "./EditaFilme.vue";
 import DeletaFilme from "./DeletaFilme.vue";
@@ -174,7 +174,7 @@ const props = defineProps({
   busca: String,
 });
 
-const filmes = ref([
+const filmesIniciais = [
   {
     id: 1,
     titulo: "Velozes e Furiosos",
@@ -253,8 +253,31 @@ const filmes = ref([
       "Velozes e Furiosos 7 acompanha Dom (Vin Diesel), Brian (Paul Walker), Letty (Michelle Rodriguez) e o resto da equipe após os acontecimentos em Londres. Apesar de terem suas chances de voltar para os Estados Unidos e recomeçarem suas vidas, a tranquilidade do grupo é destruída quando Deckard Shaw (Jason Statham), um assassino profissional, quer vingança pela morte de seu irmão. Agora, a equipe tem que se reunir para impedir este novo vilão. Mas dessa vez, não é só sobre ser veloz. A luta é pela sobrevivência.",
     sinopseAberta: false,
   },
-]);
+];
 
+const filmes = ref([]);
+
+onMounted(() =>{
+  try{
+    const filmesSalvos = localStorage.getItem("filmes");
+
+    if(filmesSalvos){
+      filmes.value = JSON.parse(filmesSalvos);
+    } else {
+      filmes.value = filmesIniciais;
+    }
+  } catch (error) {
+    filmes.value = filmesIniciais;
+  }
+});
+
+watch(
+  filmes,
+  (novoValor) => {
+    localStorage.setItem("filmes", JSON.stringify(novoValor));
+  },
+  { deep: true }
+);
 const filmesFiltrados = computed(() => {
   if (!props.busca) {
     return filmes.value;
