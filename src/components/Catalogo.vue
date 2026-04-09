@@ -107,7 +107,7 @@
                 <v-list-item-title>Editar</v-list-item-title>
               </v-list-item>
 
-              <v-list-item>
+              <v-list-item @click="abrirDelecao">
                 <v-list-item-title>Deletar</v-list-item-title>
               </v-list-item>
             </v-list>
@@ -155,6 +155,12 @@
       @fechar="dialogEditar = false"
       @salvar="salvarEdicao"
     />
+    <DeletaFilme
+      :dialog="dialogDeletar"
+      :filme="filmeDeletando"
+      @fechar="dialogDeletar = false"
+      @confirmar="confirmarDelecao"
+    />
   </v-container>
 </template>
 
@@ -162,6 +168,7 @@
 import { ref, computed } from "vue";
 import AdicionarFilme from "./AdicionarFilme.vue";
 import EditaFilme from "./EditaFilme.vue";
+import DeletaFilme from "./DeletaFilme.vue";
 
 const props = defineProps({
   busca: String,
@@ -299,5 +306,29 @@ const salvarEdicao = (filmeAtualizado) => {
 
   filmeSelecionado.value = filmes.value[index];
   dialogEditar.value = false;
+};
+
+const dialogDeletar = ref(false);
+const filmeDeletando = ref(null);
+
+const abrirDelecao = () => {
+  filmeDeletando.value = { ...filmeSelecionado.value };
+  dialogDeletar.value = true;
+};
+
+const confirmarDelecao = () => {
+  if (!filmeDeletando.value) return;
+
+  filmes.value = filmes.value.filter(
+    (filme) => filme.id !== filmeDeletando.value.id
+  );
+
+  if (filmeSelecionado.value?.id === filmeDeletando.value.id) {
+    dialog.value = false;
+    filmeSelecionado.value = null;
+  }
+
+  dialogDeletar.value = false;
+  filmeDeletando.value = null;
 };
 </script>
